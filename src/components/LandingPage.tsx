@@ -632,17 +632,17 @@ function AboutSection() {
               <span className="text-slate-300 text-xs font-semibold tracking-wide uppercase">Our Mission</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight">
-              The financial intelligence of a seasoned controller, at a fraction of the cost
+              Built for businesses that can't afford to miss anything
             </h2>
             <div className="space-y-5 text-slate-400 text-base leading-relaxed">
               <p>
-                A skilled financial controller costs between $70,000 and $100,000 per year. For most small and mid-sized businesses, that's an expense that simply isn't justifiable — yet the work they do is critical. Invoices go unpaid. Contracts get violated. Insurance lapses. Vendors quietly raise their rates.
+                Most businesses operate without dedicated financial oversight. Invoices get paid without verification. Contracts get signed and forgotten. Insurance lapses quietly. Vendors test the limits — because no one is watching closely enough.
               </p>
               <p>
-                Dominion was built to close that gap. We believe that every business — regardless of size — deserves the same financial oversight that Fortune 500 companies take for granted. Our AI reads, verifies, and flags every financial document that touches your business, giving you the confidence to approve payments knowing that nothing slipped through.
+                Dominion changes that. Our AI monitors every financial document that touches your business — reading, verifying, and flagging issues before they cost you. Not as a replacement for your judgment, but as the layer of scrutiny that makes your decisions more confident.
               </p>
               <p>
-                We're not building a tool that replaces your judgment. We're building one that earns your trust by doing the tedious, error-prone work so that when something reaches your desk, it genuinely needs your attention.
+                When something reaches your desk, it genuinely needs your attention. Everything else is handled.
               </p>
             </div>
           </div>
@@ -751,10 +751,10 @@ function PricingSection({ onEnterApp }: { onEnterApp: () => void }) {
             <span className="text-slate-300 text-xs font-semibold tracking-wide uppercase">Pricing</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-            Less than 1% of what a controller costs
+            Straightforward pricing. No surprises.
           </h2>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-            A full-time financial controller runs $70,000–$100,000 per year. Dominion starts at $149/month — and catches more than most humans would.
+            Start free during beta. When we launch, plans are priced for the businesses that need this most — not just the ones that can already afford a finance team.
           </p>
         </div>
 
@@ -855,7 +855,7 @@ function Footer() {
             <span className="text-white font-bold text-lg">Dominion</span>
           </div>
           <div className="text-slate-500 text-sm text-center">
-            AI-first financial operations for SMBs. Built to replace the work of a $70k controller.
+            AI-powered financial operations for growing businesses.
           </div>
           <div className="text-slate-600 text-sm">
             © {new Date().getFullYear()} Dominion. All rights reserved.
