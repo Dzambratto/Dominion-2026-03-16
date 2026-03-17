@@ -7,6 +7,8 @@
     { "source": "/api/gmail/scan", "destination": "/api/gmail/scan.js" },
     { "source": "/api/gmail/attachment", "destination": "/api/gmail/attachment.js" },
     { "source": "/api/extract", "destination": "/api/extract.js" },
+    { "source": "/api/outlook/scan", "destination": "/api/outlook/scan.js" },
+    { "source": "/api/outlook/attachment", "destination": "/api/outlook/attachment.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

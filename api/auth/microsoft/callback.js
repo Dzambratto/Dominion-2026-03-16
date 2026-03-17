@@ -1,19 +1,34 @@
 export default async function handler(req, res) {
-  const { code, state: userId, error } = req.query;
+  const { code, state: rawState, error } = req.query;
+
+  // Decode state to get userId and origin
+  let userId = '';
+  let origin = 'https://getdominiontech.com';
+  try {
+    const decoded = JSON.parse(Buffer.from(rawState || '', 'base64url').toString());
+    userId = decoded.userId || '';
+    origin = decoded.origin || origin;
+  } catch {
+    userId = rawState || '';
+  }
 
   if (error) {
-    return res.redirect(`https://getdominiontech.com/?oauth_error=${encodeURIComponent(error)}`);
+    return res.redirect(`${origin}/?oauth_error=${encodeURIComponent(error)}`);
   }
   if (!code) {
-    return res.redirect(`https://getdominiontech.com/?oauth_error=no_code`);
+    return res.redirect(`${origin}/?oauth_error=no_code`);
   }
 
   const clientId = process.env.MICROSOFT_CLIENT_ID;
   const clientSecret = process.env.MICROSOFT_CLIENT_SECRET;
   const tenantId = process.env.MICROSOFT_TENANT_ID || 'common';
   if (!clientId || !clientSecret) {
-    return res.redirect(`https://getdominiontech.com/?oauth_error=not_configured`);
+    return res.redirect(`${origin}/?oauth_error=not_configured`);
   }
+
+  const proto = req.headers['x-forwarded-proto'] || 'https';
+  const host = req.headers['x-forwarded-host'] || req.headers.host;
+  const redirectUri = `${proto}://${host}/api/auth/microsoft/callback`;
 
   try {
     // Exchange code for tokens
@@ -24,13 +39,13 @@ export default async function handler(req, res) {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: `https://getdominiontech.com/api/auth/microsoft/callback`,
+        redirect_uri: redirectUri,
         grant_type: 'authorization_code',
       }),
     });
     const tokens = await tokenRes.json();
     if (tokens.error) {
-      return res.redirect(`https://getdominiontech.com/?oauth_error=${encodeURIComponent(tokens.error)}`);
+      return res.redirect(`${origin}/?oauth_error=${encodeURIComponent(tokens.error)}`);
     }
 
     // Get user email from Microsoft Graph
@@ -40,10 +55,23 @@ export default async function handler(req, res) {
     const profile = await profileRes.json();
     const email = profile.mail || profile.userPrincipalName || '';
 
+    // Store tokens in a secure cookie keyed by userId
+    const cookieKey = `ms_tokens_${(userId || 'anon').replace(/[^a-zA-Z0-9]/g, '_')}`.slice(0, 64);
+    const tokenPayload = {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expiry: Date.now() + (tokens.expires_in || 3600) * 1000,
+    };
+    const encoded = Buffer.from(JSON.stringify(tokenPayload)).toString('base64');
+    res.setHeader('Set-Cookie', [
+      `${cookieKey}=${encoded}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`,
+    ]);
+
     return res.redirect(
-      `https://getdominiontech.com/?oauth_success=microsoft&email=${encodeURIComponent(email)}&userId=${encodeURIComponent(userId || '')}`
+      `${origin}/?oauth_success=microsoft&email=${encodeURIComponent(email)}&userId=${encodeURIComponent(userId)}`
     );
   } catch (err) {
-    return res.redirect(`https://getdominiontech.com/?oauth_error=server_error`);
+    console.error('Microsoft OAuth callback error:', err);
+    return res.redirect(`${origin}/?oauth_error=server_error`);
   }
 }
